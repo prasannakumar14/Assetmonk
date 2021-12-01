@@ -29,6 +29,9 @@ class Register extends Component {
 
     const url = "https://reqres.in/api/register";
     const options = {
+      headers: {
+        "Content-Type": "application/json",
+      },
       method: "POST",
       body: JSON.stringify(registerDetails),
     };

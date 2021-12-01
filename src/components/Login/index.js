@@ -8,8 +8,8 @@ import "./index.css";
 
 class Login extends Component {
   state = {
-    loginEmail: "",
-    loginPassword: "",
+    email: "",
+    password: "",
     showSubmitError: false,
     errorMsg: "",
   };
@@ -29,19 +29,22 @@ class Login extends Component {
   };
 
   onChangeEmail = (event) => {
-    this.setState({ loginEmail: event.target.value });
+    this.setState({ email: event.target.value });
   };
 
   onChangePassword = (event) => {
-    this.setState({ loginPassword: event.target.value });
+    this.setState({ password: event.target.value });
   };
 
   onSubmitLogin = async (event) => {
     event.preventDefault();
-    const { loginEmail, loginPassword } = this.state;
-    const loginDetails = { loginEmail, loginPassword };
+    const { email, password } = this.state;
+    const loginDetails = { email, password };
     const url = "https://reqres.in/api/login";
     const options = {
+      headers: {
+        "Content-Type": "application/json",
+      },
       method: "POST",
       body: JSON.stringify(loginDetails),
     };
@@ -49,7 +52,7 @@ class Login extends Component {
     const response = await fetch(url, options);
     const data = await response.json();
     if (response.ok === true) {
-      this.onSubmitSuccess(data.jwt_token);
+      this.onSubmitSuccess(data.token);
     } else {
       this.onSubmitFailure(data.error);
     }
@@ -61,7 +64,11 @@ class Login extends Component {
   };
 
   render() {
-    const { showSubmitError, errorMsg, loginEmail, loginPassword } = this.state;
+    const { showSubmitError, errorMsg, email, password } = this.state;
+    const jwtToken = Cookies.get("jwt_token");
+    if (jwtToken !== undefined) {
+      return <Redirect to="/" />;
+    }
     return (
       <div className="login-container">
         <div className="login-form-container">
@@ -72,7 +79,7 @@ class Login extends Component {
             <input
               type="text"
               id="Email"
-              value={loginEmail}
+              value={email}
               placeholder="Enter your email"
               className="input"
               onChange={this.onChangeEmail}
@@ -83,7 +90,7 @@ class Login extends Component {
             <input
               type="password"
               id="Password"
-              value={loginPassword}
+              value={password}
               placeholder="Enter your password"
               className="input"
               onChange={this.onChangePassword}
